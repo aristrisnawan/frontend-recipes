@@ -4,6 +4,7 @@ import Link from "next/link";
 
 const Card = ({ api }) => {
   const data = api?.data;
+  console.log('coy', data.length);
   return data.map((datas, idx) => {
     return (
       <div className=" shadow-md rounded-md h-full py-2 sm:w-80" key={idx}>
