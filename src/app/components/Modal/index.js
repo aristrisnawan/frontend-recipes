@@ -1,8 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from 'axios';
 
 const Modal = ({ isOpen, onClose, paramsModal }) => {
   if (!isOpen) return null;
-  console.log(paramsModal);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [username, setUsername] = useState('');
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [password, setPassword] = useState('');
+  
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,{username,password})
+      const data = response.data;
+      const token = data.token;
+      const name = data.username;
+      localStorage.setItem('token', token);
+      localStorage.setItem('name', name);
+      window.location.reload()
+      setUsername('')
+      setPassword('')
+    } catch (error) {
+      console.log('Login failed', error.message);
+    }
+  }
   return (
     <>
       <div
@@ -39,11 +59,12 @@ const Modal = ({ isOpen, onClose, paramsModal }) => {
                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     id="name"
                     type="text"
+                    required
                     placeholder="Name"
                   />
                 </div>
               )}
-              {/* batas */}
+              {/* login */}
               <div class="mb-4">
                 <label
                   class="block text-gray-700 text-sm font-bold mb-2"
@@ -56,6 +77,9 @@ const Modal = ({ isOpen, onClose, paramsModal }) => {
                   id="username"
                   type="text"
                   placeholder="Username"
+                  value={username}
+                  required
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
               <div class="mb-6">
@@ -70,17 +94,18 @@ const Modal = ({ isOpen, onClose, paramsModal }) => {
                   id="password"
                   type="password"
                   placeholder="******************"
+                  value={password}
+                  required
+                  onChange={(e) => setPassword(e.target.value)}
                 />
-                <p class="text-red-500 text-xs italic">
-                  Please choose a password.
-                </p>
               </div>
               <div class="flex items-center justify-between">
                 <button
                   class="bg-blue-500 hover:bg-blue-700 text-white font-semibold md:font-bold py-1 px-2 md:py-2 md:px-4 rounded focus:outline-none focus:shadow-outline"
                   type="button"
+                  onClick={handleLogin}
                 >
-                  Sign In
+                  {paramsModal === 'login' ? 'Sign In' : 'Sign Up'}
                 </button>
                 {/* <a
                   class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
